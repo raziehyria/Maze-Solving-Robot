@@ -29,6 +29,7 @@ const char* ssid = "medvedikville";
 const char* password = "catsanddogs";
 
 #define PART_BOUNDARY "123456789000000000000987654321"
+//https://create.arduino.cc/projecthub/ansh2919/serial-communication-between-python-and-arduino-e7cce0
 
 // This project was tested with the AI Thinker Model, M5STACK PSRAM Model and M5STACK WITHOUT PSRAM
 #define CAMERA_MODEL_AI_THINKER
