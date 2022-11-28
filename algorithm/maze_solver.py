@@ -11,7 +11,7 @@ def solve_maze():
 
         if not has_reached_end(image):
             # Move forward an inch
-            if has_left_path(image): # Can bot go right
+            if has_left_path(image): # Can bot go left
                 # Rotate -90 degrees
                 maze_path.push_move('R')
                 pass
@@ -30,7 +30,6 @@ def solve_maze():
                 # Rotate 180 degrees
                 maze_path.push_move('B')
             maze_path.reduce_path()
-
         else:
             # The end has been reached
             break

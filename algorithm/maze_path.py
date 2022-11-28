@@ -23,8 +23,16 @@ class MazePath:
         if len(self.path) >= 3:
             move3, move2, move1 = self.get_prev_moves()
             moves = move1 + move2 + move3
-            if moves == 'SBS':
+            if moves == 'LBR':
                 self.alter_moves('B')
-            elif moves == '':
-                pass
+            elif moves == 'LBS':
+                self.alter_moves('R')
+            elif moves == 'LBL':
+                self.alter_moves('S')
+            elif moves == 'SBL':
+                self.alter_moves('R')
+            elif moves == 'SBS':
+                self.alter_moves('B')
+            elif moves == 'RBL':
+                self.alter_moves('B')
     
