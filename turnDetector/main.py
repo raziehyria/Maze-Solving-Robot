@@ -39,7 +39,6 @@ def displayLines(image, lines):
                         angles.append(angle)
                         cv2.line(lineImage,(x1,y1), (x2,y2), (0,0,255), 10)
                         keptLines.append(line)
-
     return lineImage
 
 #this method only used if we need to crop the camera feed to focus on a specific area
@@ -64,6 +63,7 @@ lines = cv2.HoughLinesP(canny, 2, np.pi/180, 100, np.array([]), minLineLength = 
 lineImage = displayLines(laneImage, lines)
 final = cv2.addWeighted(laneImage, 0.8, lineImage, 1, 1)
 LINE_WIDTH = 30
+print(keptLines)
 if len(keptLines) == 1:
     print("Straight")
 else:
@@ -82,7 +82,7 @@ else:
                 print("Left Turn")
             elif midpoint > mainX + LINE_WIDTH:
                 print("Right Turn")
-            elif mainY < y1 -LINE_WIDTH:
+            elif mainY < y1 - LINE_WIDTH:
                 print("Left, Right, or Straight")
             else:
                 print("Left or Right Turn")
