@@ -83,9 +83,10 @@ def process_image(image):
     if len(keptLines) == 1:
         return("Straight")
     else:
+        mainX = 110
         for i, eachLine in enumerate(keptLines):
             x1, y1, x2, y2 = eachLine.reshape(4)
-            if angles[i] == 90:
+            if (angles[i] > 87 and angles[i] < 93) or (angles[i] > 267 and angles[i] < 273):
                 mainX = x1
                 mainY = min(y1,y2)
                 print("mainX: ", mainX)
@@ -94,6 +95,7 @@ def process_image(image):
                 midpoint = (x1 + x2) / 2
                 print("midpoint: ", midpoint)
                 print("Y: ", y1)
+                print(angles)
                 if midpoint < mainX - LINE_WIDTH:
                     return("Left Turn")
                 elif midpoint > mainX + LINE_WIDTH:
@@ -109,11 +111,12 @@ def process_image(image):
 
 
 #image = get_image()
-image = cv2.imread('right.png') #for testing without camera stream
+image = cv2.imread('leftOrRightReal.png') #for testing without camera stream
 angles = []
 keptLines = []
 laneImage = np.copy(image)
 cannyImage = canny()
 result = process_image(cannyImage)
+print(result)
 print(has_right_path())
 
