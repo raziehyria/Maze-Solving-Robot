@@ -55,7 +55,7 @@ def solve_maze_demo():
         'turnDetector/left.png', 
         'turnDetector/left.png', 
         'turnDetector/back.png', 
-        'turnDetector/straight.png'
+        'turnDetector/straight.png' 
         ]
 
     for image_url in image_array:
