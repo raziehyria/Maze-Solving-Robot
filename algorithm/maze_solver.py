@@ -22,7 +22,7 @@ def solve_maze():
                 maze_path.push_move('S')
                 pass
             elif has_straight_path():
-                # Stay straight0
+                # Stay straight
                 pass
             elif has_right_path():
                 # Rotate 90 degrees
@@ -38,19 +38,31 @@ def solve_maze():
 
 def solve_maze_demo():
     maze_path = MazePath()
+
     image_array = [
+        'turnDetector/left.png', 
+        'turnDetector/back.png', 
+        'turnDetector/left.png',
         'turnDetector/left.png',
         'turnDetector/straight.png',
-        'turnDetector/leftRightOrStraight.png',
-        'turnDetector/right.png',
-        'turnDetector/leftOrRight.png'
-    ]
+        'turnDetector/back.png',
+        'turnDetector/left.png',
+        'turnDetector/back.png',
+        'turnDetector/left.png',
+        'turnDetector/left.png',
+        'turnDetector/straight.png', 
+        'turnDetector/back.png', 
+        'turnDetector/left.png', 
+        'turnDetector/left.png', 
+        'turnDetector/back.png', 
+        'turnDetector/straight.png'
+        ]
 
     for image_url in image_array:
         image = read_image(image_url)
         maze_path.push_move(process_image(image))
-        #maze_path.reduce_path()
-    print(maze_path.path)
+        maze_path.reduce_path()
+    print('Final Path: ', maze_path.path, 'Total Moves:', maze_path.length)
 
 
 def main():

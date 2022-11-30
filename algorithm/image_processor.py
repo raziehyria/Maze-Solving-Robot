@@ -112,7 +112,9 @@ def process_image(image):
     lineImage, angles, keptLines = displayLines(image, lines)
     final = cv2.addWeighted(image, 0.8, lineImage, 1, 1)
     action = ''
-    if len(keptLines) == 1:
+    if len(keptLines) == 0:
+        action = 'B'
+    elif len(keptLines) == 1:
         #print("Straight")
         action = 'S'
     else:
@@ -138,23 +140,11 @@ def process_image(image):
                     action = 'R'
                 elif mainY < y1 - LINE_WIDTH:
                     #print("Left, Right, or Straight")
-                    action = 'R'
+                    action = 'L'
                 else:
                     #print("Left or Right Turn")
-                    action = 'R'
+                    action = 'L'
     cv2.imshow("result", final)
     cv2.waitKey(0)
     #return midpoint, mainX, mainY,
     return action
-
-
-#image = get_image()
-#image = cv2.imread('leftOrRightReal.png') #for testing without camera stream
-#angles = []
-#keptLines = []
-#laneImage = np.copy(image)
-#cannyImage = canny()
-#result = process_image(cannyImage)
-#print(result)
-#print(has_right_path())
-
