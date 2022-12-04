@@ -23,7 +23,7 @@ def displayLines(image, lines):
         for line in lines:
             x1, y1, x2, y2 = line.reshape(4) #takes two point from line
             #finds angle of each line
-            if x2 - x1 == 0:
+            if x2 - x1 == 0: #if line is perfectly verticle; avoids divide by 0 error
                 if 90.0 not in angles:
                     angles.append(90)
                     cv2.line(lineImage, (x1, y1), (x2, y2), (0, 0, 255), 10)
@@ -67,7 +67,8 @@ def get_image(image_url):
     image = cv2.imdecode(image_as_np_array, -1)
     return image
 
-def has_straight_path(image):
+#functions for demo purposes
+"""def has_straight_path(image):
     h, w = image.shape
     #for x in range(int(w / 2))
     pass
@@ -88,10 +89,22 @@ def has_left_path(image):
         if result: 
             return True
     return False
-    #return midpoint < mainX - LINE_WIDTH
+    #return midpoint < mainX - LINE_WIDTH"""
 
-def has_reached_end():
-    pass
+def has_straight_path(state):
+    return 'S' in state['J']
+
+def has_right_path(state):
+    return 'R' in state['J']
+
+def has_left_path(state):
+    return 'L' in state['J']
+
+def has_reached_end(state):
+    if state['isEnd']:
+        print("End Reached!")
+        return True
+    return False
 
 def test(image):
     gray = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
@@ -107,44 +120,82 @@ def test(image):
 
 def process_image(image):
     canny_image = canny(image)
+    h, w = canny_image.shape
+    alignment = "C"
     #cropped_canny_image = regionOfInterest(canny_image)
     lines = cv2.HoughLinesP(canny_image, 2, np.pi/180, 100, np.array([]), minLineLength = 50, maxLineGap = 100) #change canny to cropped to use cropped image
     lineImage, angles, keptLines = displayLines(image, lines)
     final = cv2.addWeighted(image, 0.8, lineImage, 1, 1)
-    action = ''
+    state = {'J': '', 'A': alignment, 'isEnd': False} #J: Junction, A: alignment
+
+    #-------detect red in image. If red seen then goal is reached---------
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    lower_red = np.array([0,0,240])  #adjust thresholds for preferred red detection
+    upper_red = np.array([25,150,255])
+    red_mask = cv2.inRange(hsv,lower_red,upper_red)
+    red_color = cv2.bitwise_and(image,image,mask=red_mask)
+
+    #cv2.imshow("redmask", red_color)
+    for eachRow in red_color.tolist():  #there is probably a better way to detect this but I honestly cannot figure it out
+        for eachPixel in eachRow:
+            for eachColor in eachPixel:
+                if eachColor != 0:
+                    state['isEnd'] = True
+   
+    #--------------------------------------------------------------------
+
+    #-------find key points-------------------------------------------------
+    mainX = int(w/2) #mainX is horizontal position of the main path; intitialized to center of screen
+    for i, eachLine in enumerate(keptLines):
+        x1, y1, x2, y2 = eachLine.reshape(4)
+        if (angles[i] > 85 and angles[i] < 95) or (angles[i] > 265 and angles[i] < 275):
+            mainX = x1
+            mainY = min(y1,y2)
+        else:
+            midpoint = (x1 + x2) / 2
+     #--------------------------------------------------------------------
+
+
+     #------find alignment of track for adjustments----------------------------
+    section = int(w/5)
+    if mainX < section:
+        state['A'] = "FL"        #Far Left
+    elif mainX < section * 2:
+        state['A']  = "L"         #Slight Left
+    elif mainX < section * 3:
+        state['A']  = "C"         #Centered
+    elif mainX < section * 4:
+        state['A']  = "R"         #Slight Right
+    else:
+        state['A']  = "FR"        #Far Right
+
+     #--------------------------------------------------------------------
+
+
+     #-------define type of junction-----------------------------------------
     if len(keptLines) == 0:
-        action = 'B'
+        state['J'] = 'B'
     elif len(keptLines) == 1:
         #print("Straight")
-        action = 'S'
+        state['J'] = 'S'
     else:
-        for i, eachLine in enumerate(keptLines):
-            x1, y1, x2, y2 = eachLine.reshape(4)
-            if (angles[i] > 87 and angles[i] < 93) or (angles[i] > 267 and angles[i] < 273):
-                mainX = x1
-                mainY = min(y1,y2)
-                #print("mainX: ", mainX)
-                #print("mainY: ", mainY)
-            else:
-                midpoint = (x1 + x2) / 2
-                #print("midpoint: ", midpoint)
-                #print("Y: ", y1)
-                #print(angles)
-                #print("mainX: ", mainX)
-                #print("mainY: ", mainY)
-                if midpoint < mainX - LINE_WIDTH:
-                    #print("Left Turn")
-                    action = 'L'
-                elif midpoint > mainX + LINE_WIDTH:
-                    #print("Right Turn")
-                    action = 'R'
-                elif mainY < y1 - LINE_WIDTH:
-                    #print("Left, Right, or Straight")
-                    action = 'L'
-                else:
-                    #print("Left or Right Turn")
-                    action = 'L'
+                
+        if midpoint < mainX - LINE_WIDTH:
+            #print("Left Turn")
+            state['J'] = 'L'
+        elif midpoint > mainX + LINE_WIDTH:
+            #print("Right Turn")
+            state['J'] = 'R'
+        elif mainY < y1 - LINE_WIDTH:
+            #print("Left, Right, or Straight")
+            state['J'] = 'LRS'
+        else:
+            #print("Left or Right Turn")
+            state['J'] = 'LR'
+        #may need to add options for LS and RS
+     #--------------------------------------------------------------------
+
     cv2.imshow("result", final)
     cv2.waitKey(0)
     #return midpoint, mainX, mainY,
-    return action
+    return state
