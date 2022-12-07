@@ -67,30 +67,6 @@ def get_image(image_url):
     image = cv2.imdecode(image_as_np_array, -1)
     return image
 
-#functions for demo purposes
-"""def has_straight_path(image):
-    h, w = image.shape
-    #for x in range(int(w / 2))
-    pass
-
-def has_right_path(image):
-    h, w = image.shape
-    for row in range(int(h / 2) - 30, int(h / 2) + 30):
-        result = np.all(image[row][int(w / 2): w - 1] != 255)
-        if result: 
-            return True
-    return False
-    #return midpoint > mainX + LINE_WIDTH
-
-def has_left_path(image):
-    h, w = image.shape
-    for row in range(int(h / 2) - 30, int(h / 2) + 30):
-        result = np.all(image[row][0: int(w / 2)] != 255)
-        if result: 
-            return True
-    return False
-    #return midpoint < mainX - LINE_WIDTH"""
-
 def has_straight_path(state):
     return 'S' in state['J']
 
@@ -105,18 +81,6 @@ def has_reached_end(state):
         print("End Reached!")
         return True
     return False
-
-def test(image):
-    gray = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
-    thresh, im_bw = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    h, w = im_bw.shape
-    #0line = cv2.line(im_bw, (int(w / 2) + 30, 0), (int(w / 2) + 30, h - 1), (0, 0, 255), 2)
-    #line = cv2.line(im_bw, (int(w / 2) - 30, 0), (int(w / 2) - 30, h - 1), (0, 0, 255), 2)
-    #line = cv2.line(im_bw, (0, int(h / 2) + 30), (w - 1,int(h / 2) + 30), (0, 0, 255), 2)
-    #line = cv2.line(im_bw, (0 , int(h / 2) - 30), (w - 1, int(h / 2) - 30), (0, 0, 255), 2)
-    #cv2.imshow("result", line)
-    #cv2.waitKey(0)
-    return im_bw
 
 def process_image(image):
     canny_image = canny(image)
@@ -146,6 +110,7 @@ def process_image(image):
 
     #-------find key points-------------------------------------------------
     mainX = int(w/2) #mainX is horizontal position of the main path; intitialized to center of screen
+    mainY = 0
     for i, eachLine in enumerate(keptLines):
         x1, y1, x2, y2 = eachLine.reshape(4)
         if (angles[i] > 85 and angles[i] < 95) or (angles[i] > 265 and angles[i] < 275):
@@ -195,7 +160,7 @@ def process_image(image):
         #may need to add options for LS and RS
      #--------------------------------------------------------------------
 
-    cv2.imshow("result", final)
-    cv2.waitKey(0)
-    #return midpoint, mainX, mainY,
-    return state
+        #cv2.imshow("result", final)
+        #cv2.waitKey(0)
+
+    return state, final # Returning the state and the final image so we can display in a loop
