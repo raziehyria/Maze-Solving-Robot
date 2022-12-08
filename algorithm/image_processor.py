@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 import urllib.request as url
+from PIL import Image
 
-LINE_WIDTH = 30
+LINE_WIDTH = 60
 
 def read_image(image_URL): 
     return cv2.imread(image_URL)
@@ -41,7 +42,7 @@ def displayLines(image, lines):
                     #if line is unique then save it
                     unique = True
                     for eachAngle in angles:
-                        if np.abs(angle - eachAngle) < 10:
+                        if np.abs(angle - eachAngle) < 10 or (np.abs(angle - eachAngle) > 350 and np.abs(angle - eachAngle) < 365) or  (np.abs(angle - eachAngle) > 170 and np.abs(angle - eachAngle) < 190):
                             unique = False
                     if unique:
                         angles.append(angle)
@@ -113,11 +114,21 @@ def process_image(image):
     mainY = 0
     for i, eachLine in enumerate(keptLines):
         x1, y1, x2, y2 = eachLine.reshape(4)
-        if (angles[i] > 85 and angles[i] < 95) or (angles[i] > 265 and angles[i] < 275):
+        print(angles[i], "degrees   (",x1, ", ", y1, ") to (",x2, ", ", y2, ")")
+        if (angles[i] > 80 and angles[i] < 100) or (angles[i] > 260 and angles[i] < 280):
             mainX = x1
             mainY = min(y1,y2)
-        else:
+
+    for i, eachLine in enumerate(keptLines):
+        x1, y1, x2, y2 = eachLine.reshape(4)
+        if not ((angles[i] > 80 and angles[i] < 100) or (angles[i] > 260 and angles[i] < 280)):
             midpoint = (x1 + x2) / 2
+            print(midpoint)
+            turnX = min(abs(x1 - mainX), abs(x2 - mainX))
+            if turnX == x1:
+                turnY = y1
+            else:
+                turnY = y2
      #--------------------------------------------------------------------
 
 
@@ -145,19 +156,24 @@ def process_image(image):
         state['J'] = 'S'
     else:
                 
-        if midpoint < mainX - LINE_WIDTH:
+        if midpoint < mainX - LINE_WIDTH and mainY < turnY - 10:
+            #print("Straight or Left Turn")
+            state['J'] = 'SL'
+        elif midpoint < mainX - LINE_WIDTH:
             #print("Left Turn")
             state['J'] = 'L'
+        elif midpoint > mainX + LINE_WIDTH and mainY < turnY - 10:
+            #print("Straight or Right Turn")
+            state['J'] = 'SR'
         elif midpoint > mainX + LINE_WIDTH:
             #print("Right Turn")
             state['J'] = 'R'
-        elif mainY < y1 - LINE_WIDTH:
+        elif mainY < turnY - LINE_WIDTH:
             #print("Left, Right, or Straight")
             state['J'] = 'LRS'
         else:
             #print("Left or Right Turn")
             state['J'] = 'LR'
-        #may need to add options for LS and RS
      #--------------------------------------------------------------------
 
         #cv2.imshow("result", final)
