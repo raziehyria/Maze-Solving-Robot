@@ -47,5 +47,3 @@ class MazePath:
             elif moves == 'RBL':
                 self.alter_moves('B')
                 print(self.path[-1])
-        #self.reduce_path()
-    

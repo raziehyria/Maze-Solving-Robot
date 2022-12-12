@@ -24,8 +24,8 @@ def displayLines(image, lines):
         for line in lines:
             x1, y1, x2, y2 = line.reshape(4) #takes two point from line
             #finds angle of each line
-            if x2 - x1 == 0: #if line is perfectly verticle; avoids divide by 0 error
-                if 90.0 not in angles:
+            if x2 - x1 == 0: #if line is perfectly vertical; avoids divide by 0 angles[0]
+                if 90.0 not in angles: # and np.abs(90 - angles[0]) < 10 or (np.abs(90 - angles[0]) > 350 and np.abs(90 - angles[0]) < 365) or  (np.abs(90 - angles[0]) > 170 and np.abs(90 - angles[0]) < 190):
                     angles.append(90)
                     cv2.line(lineImage, (x1, y1), (x2, y2), (0, 0, 255), 10)
                     keptLines.append(line)
@@ -95,8 +95,8 @@ def process_image(image):
 
     #-------detect red in image. If red seen then goal is reached---------
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    lower_red = np.array([0,0,240])  #adjust thresholds for preferred red detection
-    upper_red = np.array([25,150,255])
+    lower_red = np.array([136, 87, 111])  #adjust thresholds for preferred red detection
+    upper_red = np.array([180, 255, 255])
     red_mask = cv2.inRange(hsv,lower_red,upper_red)
     red_color = cv2.bitwise_and(image,image,mask=red_mask)
 
@@ -112,6 +112,8 @@ def process_image(image):
     #-------find key points-------------------------------------------------
     mainX = int(w/2) #mainX is horizontal position of the main path; intitialized to center of screen
     mainY = 0
+    midpoint = 1000
+
     for i, eachLine in enumerate(keptLines):
         x1, y1, x2, y2 = eachLine.reshape(4)
         print(angles[i], "degrees   (",x1, ", ", y1, ") to (",x2, ", ", y2, ")")
@@ -147,11 +149,11 @@ def process_image(image):
 
      #--------------------------------------------------------------------
 
-
+    print(keptLines)
      #-------define type of junction-----------------------------------------
     if len(keptLines) == 0:
         state['J'] = 'B'
-    elif len(keptLines) == 1:
+    elif len(keptLines) == 1 or midpoint == 1000:
         #print("Straight")
         state['J'] = 'S'
     else:
