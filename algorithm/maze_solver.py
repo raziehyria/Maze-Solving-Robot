@@ -21,24 +21,24 @@ def solve_maze():
                 # Rotate -90 degrees
                 MAZE_PATH.push_move('L')
                 MCU.write('1'.encode()) # Sends encoded 1 to make the bot go left
-                print('L') 
+                print('Turn Left') 
             elif has_straight_path(trackState) and has_right_path(trackState):
                 # Stay straight0
-                print('S')
+                print('Stay Straight')
                 MAZE_PATH.push_move('S')
                 MCU.write('4'.encode()) # Sends encoded 4 to make the bot go straight
             elif has_straight_path(trackState):
                 # Stay straight
-                print('S2')
+                print('Stay Straight')
                 MCU.write('4'.encode()) # Sends encoded 4 to make the bot go straight
             elif has_right_path(trackState):
                 # Rotate 90 degrees
                 MAZE_PATH.push_move('R')
                 MCU.write('2'.encode()) # Sends encoded 2 to make the bot go right
-                print('R')
+                print('Turn Right')
             else:
                 # Rotate 180 degrees
-                print('B')
+                print('Turn Back')
                 MAZE_PATH.push_move('B')
                 MCU.write('3'.encode()) # Sends encoded 0 to make the bot stop
             MAZE_PATH.reduce_path()
@@ -65,17 +65,21 @@ def do_maze(maze_path):
                 # Rotate -90 degrees
                 MCU.write('1'.encode()) # Sends encoded 1 to make the bot go left
                 maze_path.path.pop()
+                print("Turn Left")
             elif has_straight_path(trackState) and maze_path[0] == 'S': 
                 # Stay straight
                 MCU.write('4'.encode()) # Sends encoded 4 to make the bot go straight
                 maze_path.path.pop()
+                print("Stay Straight")
             elif has_right_path(trackState) and maze_path.path[0] == 'R':
                 # Rotate 90 degrees
                 MCU.write('2'.encode()) # Sends encoded 2 to make the bot go right
                 maze_path.path.pop()
+                print("Turn Right")
             else:
                 # Rotate 180 degrees
                 MCU.write('4'.encode()) # Sends encoded 0 to make the bot stop
+                print("Go Back")
         else:
             # The end has been reached
             break
