@@ -28,7 +28,7 @@ class MazePath:
         if len(self.path) >= 3:
             move3, move2, move1 = self.get_prev_moves()
             moves = move1 + move2 + move3
-            print(moves  + ' -> ',)
+            #print(moves  + ' -> ',)
             if moves == 'LBR':
                 self.alter_moves('B')
                 print(self.path[-1])

@@ -116,7 +116,7 @@ def process_image(image):
 
     for i, eachLine in enumerate(keptLines):
         x1, y1, x2, y2 = eachLine.reshape(4)
-        print(angles[i], "degrees   (",x1, ", ", y1, ") to (",x2, ", ", y2, ")")
+        #print(angles[i], "degrees   (",x1, ", ", y1, ") to (",x2, ", ", y2, ")")
         if (angles[i] > 80 and angles[i] < 100) or (angles[i] > 260 and angles[i] < 280):
             mainX = x1
             mainY = min(y1,y2)
@@ -125,7 +125,6 @@ def process_image(image):
         x1, y1, x2, y2 = eachLine.reshape(4)
         if not ((angles[i] > 80 and angles[i] < 100) or (angles[i] > 260 and angles[i] < 280)):
             midpoint = (x1 + x2) / 2
-            print(midpoint)
             turnX = min(abs(x1 - mainX), abs(x2 - mainX))
             if turnX == x1:
                 turnY = y1
@@ -149,7 +148,6 @@ def process_image(image):
 
      #--------------------------------------------------------------------
 
-    print(keptLines)
      #-------define type of junction-----------------------------------------
     if len(keptLines) == 0:
         state['J'] = 'B'

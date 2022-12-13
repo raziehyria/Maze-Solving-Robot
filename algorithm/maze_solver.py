@@ -6,7 +6,7 @@ import time
 
 # Adjust these for your own ESP-32 and COM-Port
 URL = 'http://10.0.0.161/capture'
-MCU = serial.Serial("COM6", 9600)
+#MCU = serial.Serial("COM6", 9600)
 MAZE_PATH = MazePath()
 
 
@@ -80,15 +80,14 @@ def do_maze(maze_path):
             # The end has been reached
             break
         # Sleep for a half sec after a movement
-        time.sleep(.5)
-
+        time.sleep()
 
 def solve_maze_demo():
     maze_path = MazePath()
 
     image_array = [
         'turnDetector/left.png', 
-        'turnDetector/end.png', 
+        'turnDetector/back.png',                                                                                     
         'turnDetector/left.png',
         'turnDetector/left.png',
         'turnDetector/straight.png',
@@ -105,10 +104,6 @@ def solve_maze_demo():
         'turnDetector/straight.png' 
         ]
 
-    image_array = [
-        'turnDetector/rightReal.png', 
-        'turnDetector/leftOrRightReal.png', 
-        ]
 
     move = {
         'S': '4',
@@ -118,21 +113,89 @@ def solve_maze_demo():
     }
     for image_url in image_array:
         image = read_image(image_url)
-        dir = process_image(image)
-        maze_path.push_move(dir)
-        MCU.write(move[dir['J'][0]].encode())
-
+        dir, final = process_image(image)
+        print(dir['J'][0])
+        maze_path.push_move(dir['J'][0])
         maze_path.reduce_path()
+        cv2.imshow('Image', final)
+        cv2.waitKey(0)
 
 
     print('Final Path: ', maze_path.path, 'Total Moves:', maze_path.length)
 
+def maze_demo():
+    time.sleep(2)
+    while (True):
+        time.sleep(5)
+        image = get_image(URL)
+        trackState, final = process_image(image)
+        if not has_reached_end(trackState):
+            # Move forward an inch
+            if has_left_path(trackState): # Can bot go left
+                # Rotate -90 degrees
+                MAZE_PATH.push_move('L')
+                print('Go Left :' + str(MAZE_PATH.path)) 
+            elif has_straight_path(trackState) and has_right_path(trackState):
+                # Stay straight
+                MAZE_PATH.push_move('S')
+                print('Go Straight : ' + str(MAZE_PATH.path))
+            elif has_straight_path(trackState):
+                # Stay straight
+                print('Go Straight : ' + str(MAZE_PATH.path))
+            elif has_right_path(trackState):
+                # Rotate 90 degrees
+                MAZE_PATH.push_move('R')
+                print('Go Right : ' + str(MAZE_PATH.path))
+            else:
+                # Rotate 180 degrees
+                MAZE_PATH.push_move('B')
+                print('Go Back : ' + str(MAZE_PATH.path))
+            MAZE_PATH.reduce_path()
+        else:
+            # The end has been reached
+            return MAZE_PATH.path
+        # Sleep for a half sec after a movement
 
+        cv2.imshow("result", final)
+
+        # Closes the video feed if showing
+        if cv2.waitKey(1) & 0xFF == ord('e'):
+            break
+
+def solve_demo(maze_path):
+    time.sleep(2)
+    while (True):
+        time.sleep(5)
+        image = get_image(URL)
+        trackState, final = process_image(image)
+        if not has_reached_end(trackState):
+            # Move forward an inch
+            if has_left_path(trackState) and maze_path.path[0] == 'L': # Can bot go left
+                # Rotate -90 degrees
+                print('Go Left', str(maze_path.path[0]))
+                maze_path.path.pop(0)
+            elif has_straight_path(trackState) and (has_left_path(trackState) or has_right_path(trackState)) and maze_path.path[0] == 'S': 
+                # Stay straight
+                print('Go Straight', str(maze_path.path[0]))
+                maze_path.path.pop(0)
+            elif has_right_path(trackState) and maze_path.path[0] == 'R':
+                # Rotate 90 degrees
+                print('Go Right', str(maze_path.path[0]))
+                maze_path.path.pop(0)
+            else:
+                print('Stay Straight', str(maze_path.path[0]))
+        else:
+            # The end has been reached
+            print("Maze Finished!")
+            return
 
 def main():
-    solve_maze()
-    time.sleep(15)
-    do_maze(MAZE_PATH)
-
+    #solve_maze()
+    #time.sleep(15)
+    #do_maze(MAZE_PATH)
+    ('Path :' + str(['S', 'S', 'R', 'R']))
+    MAZE_PATH.path = ['S', 'S', 'R', 'R']
+    solve_demo(MAZE_PATH)
+    
 if __name__ == '__main__':
     main()
