@@ -26,19 +26,19 @@ This project aims to utilize camera vision and artificial intelligence to maneuv
 
 ## How the maze algorithm works:
 1. Given the processed image, assess if there is a left turn
-  * Take a left turn if available, and add ‘L’ to the path taken
+   * Take a left turn if available, and add ‘L’ to the path taken
 2. If there is no left path, asses if there is a straight path
-  * Take the straight path, and add ‘S’ to the path taken if there is no ‘S’ at the front of the path 
+   * Take the straight path, and add ‘S’ to the path taken if there is no ‘S’ at the front of the path 
 3. If there is no straight or right path, asses if there is a right path
-  * Take the right path and add ‘R’ to the path taken
+   * Take the right path and add ‘R’ to the path taken
 4. After any action, check if there is at least a sequence of 3 actions
 5. Try to reduce the last 3 actions into an optimal action
- * LBR → B
- * LBS → R
- * LBL → S
- * SBL → R
- * SBS → B
- * RBL → B
+  * * LBR → B
+  * * LBS → R
+  * * LBL → S
+  * * SBL → R
+  * * SBS → B
+  * * RBL → B
 
 ## Robot Logic
 Every time the image process algorithm returns the available actions, the maze algorithm will determine which action the robot should take. Actions are added to the path and at the same time, a value will be serialized and sent to the Arduino using the COM port. There are 5 values that are sent over the COM port to trigger the robot's movement function. The message sent over the port is parsed to an int and a switch statement is used to choose which action to trigger.
