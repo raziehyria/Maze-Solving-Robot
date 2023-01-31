@@ -53,7 +53,7 @@ Actions are added to the path and at the same time, a value will be serialized a
 There are 5 values that are sent over the COM port to trigger the robot's movement function. 
 The message sent over the port is parsed to an int and a switch statement is used to choose which action to trigger.
 
-1. COM port values:
+* COM port values:
   * ‘0’: Triggers a stop action
   * ‘1’: Triggers a left action
   * ‘2’: Triggers a right action
