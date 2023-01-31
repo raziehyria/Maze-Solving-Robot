@@ -25,14 +25,14 @@ This project aims to utilize camera vision and artificial intelligence to maneuv
 
 ## How the maze algorithm works:
 1. Given the processed image, assess if there is a left turn
-..a.Take a left turn if available, and add ‘L’ to the path taken
+..* Take a left turn if available, and add ‘L’ to the path taken
 2. If there is no left path, asses if there is a straight path
-..aTake the straight path, and add ‘S’ to the path taken if there is no ‘S’ at the front of the path 
+..* Take the straight path, and add ‘S’ to the path taken if there is no ‘S’ at the front of the path 
 3. If there is no straight or right path, asses if there is a right path
-..aTake the right path and add ‘R’ to the path taken
+..* Take the right path and add ‘R’ to the path taken
 4. After any action, check if there is at least a sequence of 3 actions
-..a. Try to reduce the last 3 actions into an optimal action
-....1. LBR → B
+..* Try to reduce the last 3 actions into an optimal action
+ LBR → B
 ....2. LBS → R
 ....2. LBL → S
 ....4. SBL → R
@@ -41,9 +41,9 @@ This project aims to utilize camera vision and artificial intelligence to maneuv
 
 ## Robot Logic
 Every time the image process algorithm returns the available actions, the maze algorithm will determine which action the robot should take. Actions are added to the path and at the same time, a value will be serialized and sent to the Arduino using the COM port. There are 5 values that are sent over the COM port to trigger the robot's movement function. The message sent over the port is parsed to an int and a switch statement is used to choose which action to trigger.
-COM port values:
-1. ‘0’: Triggers a stop action
-2. ‘1’: Triggers a left action
-3. ‘2’: Triggers a right action
-4. ‘3’: Triggers a turnaround action
-5. ‘4’: Triggers a straight action
+*COM port values:
+..* ‘0’: Triggers a stop action
+..*. ‘1’: Triggers a left action
+..* ‘2’: Triggers a right action
+..* ‘3’: Triggers a turnaround action
+..* ‘4’: Triggers a straight action
